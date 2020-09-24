@@ -1,0 +1,25 @@
+---
+title: "Kolby"
+author: "Maxwel Coura Oliveira"
+date: "7/8/2019"
+output: pdf_document
+---
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(ggthemes)
+```
+
+```{r}
+Data <- read.csv("Data.csv")
+glimpse(Data)
+```
+
+```{r}
+ggplot(Data, aes(x=trt, y=control, fill=trt)) + geom_bar(stat = "summary", fun.y = "mean") +
+  coord_flip() + theme_wsj()+ facet_wrap(~crop) + 
+  theme(legend.position = "none", axis.title = element_text(), strip.text = element_text(size=15, face="bold")) + labs(y="Weed Control (%)", x="") +
+  ggsave("Kolby.pdf", height = 6, width = 12)
+```
+

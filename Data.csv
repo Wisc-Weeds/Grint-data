@@ -1,0 +1,97 @@
+trt,rep,crop,control,rate
+Tillage + POST,1,Corn,20,0.2
+Tillage + POST,2,Corn,30,0.3
+Tillage + POST,3,Corn,15,0.15
+Tillage + POST,4,Corn,99,0.99
+No-till + POST,1,Corn,45,0.45
+No-till + POST,2,Corn,85,0.85
+No-till + POST,3,Corn,65,0.65
+No-till + POST,4,Corn,60,0.6
+Cereal Rye terminated 2 weeks prior to plant + POST,1,Corn,60,0.6
+Cereal Rye terminated 2 weeks prior to plant + POST,2,Corn,85,0.85
+Cereal Rye terminated 2 weeks prior to plant + POST,3,Corn,70,0.7
+Cereal Rye terminated 2 weeks prior to plant + POST,4,Corn,75,0.75
+Cereal Rye terminated at plant + POST,1,Corn,90,0.9
+Cereal Rye terminated at plant + POST,2,Corn,85,0.85
+Cereal Rye terminated at plant + POST,3,Corn,,
+Cereal Rye terminated at plant + POST,4,Corn,85,0.85
+Cerealy Rye forage harvest + POST,1,Corn,95,0.95
+Cerealy Rye forage harvest + POST,2,Corn,80,0.8
+Cerealy Rye forage harvest + POST,3,Corn,99,0.99
+Cerealy Rye forage harvest + POST,4,Corn,99,0.99
+Cereal Rye terminated 2 weeks after plant + POST,1,Corn,99,0.99
+Cereal Rye terminated 2 weeks after plant + POST,2,Corn,95,0.95
+Cereal Rye terminated 2 weeks after plant + POST,3,Corn,99,0.99
+Cereal Rye terminated 2 weeks after plant + POST,4,Corn,99,0.99
+Tillage + PRE fb POST,1,Corn,99,0.99
+Tillage + PRE fb POST,2,Corn,99,0.99
+Tillage + PRE fb POST,3,Corn,99,0.99
+Tillage + PRE fb POST,4,Corn,99,0.99
+No-till + PRE fb POST,1,Corn,99,0.99
+No-till + PRE fb POST,2,Corn,99,0.99
+No-till + PRE fb POST,3,Corn,99,0.99
+No-till + PRE fb POST,4,Corn,99,0.99
+Cereal Rye terminated 2 weeks prior to plant + PRE fb POST,1,Corn,99,0.99
+Cereal Rye terminated 2 weeks prior to plant + PRE fb POST,2,Corn,99,0.99
+Cereal Rye terminated 2 weeks prior to plant + PRE fb POST,3,Corn,99,0.99
+Cereal Rye terminated 2 weeks prior to plant + PRE fb POST,4,Corn,99,0.99
+Cereal Rye terminated at plant + PRE fb POST,1,Corn,99,0.99
+Cereal Rye terminated at plant + PRE fb POST,2,Corn,99,0.99
+Cereal Rye terminated at plant + PRE fb POST,3,Corn,99,0.99
+Cereal Rye terminated at plant + PRE fb POST,4,Corn,99,0.99
+Cerealy Rye forage harvest + PRE fb POST,1,Corn,99,0.99
+Cerealy Rye forage harvest + PRE fb POST,2,Corn,90,0.9
+Cerealy Rye forage harvest + PRE fb POST,3,Corn,99,0.99
+Cerealy Rye forage harvest + PRE fb POST,4,Corn,99,0.99
+Cereal Rye terminated 2 weeks after plant + PRE fb POST,1,Corn,99,0.99
+Cereal Rye terminated 2 weeks after plant + PRE fb POST,2,Corn,99,0.99
+Cereal Rye terminated 2 weeks after plant + PRE fb POST,3,Corn,99,0.99
+Cereal Rye terminated 2 weeks after plant + PRE fb POST,4,Corn,99,0.99
+Tillage + POST,1,Soybean,30,0.3
+Tillage + POST,2,Soybean,30,0.3
+Tillage + POST,3,Soybean,20,0.2
+Tillage + POST,4,Soybean,30,0.3
+No-till + POST,1,Soybean,50,0.5
+No-till + POST,2,Soybean,70,0.7
+No-till + POST,3,Soybean,99,0.99
+No-till + POST,4,Soybean,90,0.9
+Cereal Rye terminated 2 weeks prior to plant + POST,1,Soybean,75,0.75
+Cereal Rye terminated 2 weeks prior to plant + POST,2,Soybean,99,0.99
+Cereal Rye terminated 2 weeks prior to plant + POST,3,Soybean,80,0.8
+Cereal Rye terminated 2 weeks prior to plant + POST,4,Soybean,75,0.75
+Cereal Rye terminated at plant + POST,1,Soybean,90,0.9
+Cereal Rye terminated at plant + POST,2,Soybean,99,0.99
+Cereal Rye terminated at plant + POST,3,Soybean,99,0.99
+Cereal Rye terminated at plant + POST,4,Soybean,85,0.85
+Cerealy Rye forage harvest + POST,1,Soybean,99,0.99
+Cerealy Rye forage harvest + POST,2,Soybean,99,0.99
+Cerealy Rye forage harvest + POST,3,Soybean,99,0.99
+Cerealy Rye forage harvest + POST,4,Soybean,99,0.99
+Cereal Rye terminated 2 weeks after plant + POST,1,Soybean,99,0.99
+Cereal Rye terminated 2 weeks after plant + POST,2,Soybean,99,0.99
+Cereal Rye terminated 2 weeks after plant + POST,3,Soybean,99,0.99
+Cereal Rye terminated 2 weeks after plant + POST,4,Soybean,99,0.99
+Tillage + PRE fb POST,1,Soybean,95,0.95
+Tillage + PRE fb POST,2,Soybean,99,0.99
+Tillage + PRE fb POST,3,Soybean,90,0.9
+Tillage + PRE fb POST,4,Soybean,95,0.95
+No-till + PRE fb POST,1,Soybean,90,0.9
+No-till + PRE fb POST,2,Soybean,30,0.3
+No-till + PRE fb POST,3,Soybean,80,0.8
+No-till + PRE fb POST,4,Soybean,90,0.9
+Cereal Rye terminated 2 weeks prior to plant + PRE fb POST,1,Soybean,80,0.8
+Cereal Rye terminated 2 weeks prior to plant + PRE fb POST,2,Soybean,99,0.99
+Cereal Rye terminated 2 weeks prior to plant + PRE fb POST,3,Soybean,99,0.99
+Cereal Rye terminated 2 weeks prior to plant + PRE fb POST,4,Soybean,99,0.99
+Cereal Rye terminated at plant + PRE fb POST,1,Soybean,90,0.9
+Cereal Rye terminated at plant + PRE fb POST,2,Soybean,90,0.9
+Cereal Rye terminated at plant + PRE fb POST,3,Soybean,99,0.99
+Cereal Rye terminated at plant + PRE fb POST,4,Soybean,99,0.99
+Cerealy Rye forage harvest + PRE fb POST,1,Soybean,95,0.95
+Cerealy Rye forage harvest + PRE fb POST,2,Soybean,99,0.99
+Cerealy Rye forage harvest + PRE fb POST,3,Soybean,99,0.99
+Cerealy Rye forage harvest + PRE fb POST,4,Soybean,99,0.99
+Cereal Rye terminated 2 weeks after plant + PRE fb POST,1,Soybean,99,0.99
+Cereal Rye terminated 2 weeks after plant + PRE fb POST,2,Soybean,99,0.99
+Cereal Rye terminated 2 weeks after plant + PRE fb POST,3,Soybean,99,0.99
+Cereal Rye terminated 2 weeks after plant + PRE fb POST,4,Soybean,99,0.99
