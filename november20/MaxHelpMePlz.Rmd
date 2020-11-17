@@ -7,7 +7,7 @@ output: html_document
 
 ```{r, include= FALSE}
 library(car)
-library(ggplot2)
+library(tidyverse)
 library(emmeans)
 library(lme4)
 library(lmerTest)
@@ -18,34 +18,29 @@ library(dplyr)
 
 
 ```{r}
-getwd()
-
-#Corn1= read.csv(file="Corn_MasterData.csv")
-Soybean1= read.csv(file="Soybean_MasterData.csv")
-
-str(Soybean1)
-```
-
-```{r}
-Soybean1 <- Soybean1 %>%
-  mutate(SBcanopy = 
+Soybean1 <- read_csv(file="Soybean_MasterData.csv") %>% 
+  janitor::clean_names() %>% # never use spaces between col names
+  mutate(
+    sb_canopy = round(cc_canopy/100, 4)) %>% 
+  mutate(
+    sb_canopy = 
          case_when(
-         CC.Canopy == 0     ~  0.001,
-         CC.Canopy == 1     ~  0.999,
-         TRUE               ~  SBcanopy
+         sb_canopy == 0.0000     ~  0.001,
+         sb_canopy == 1.0000     ~  0.999,
+         TRUE               ~  sb_canopy
          ) 
-           )
+         )
 ```
 
 
 ```{r}
 
-soy.mod2= glmmTMB(SBcanopy~ Site_crop_yr*Soil*Herb + (1|Site_crop_yr:Rep), data=Soybean1)
+soy.mod2 <- glmmTMB(sb_canopy ~ site_crop_yr * soil * herb + (1|site_crop_yr:rep), data=Soybean1)
 
-Anova(soy.mod2)
+glmmTMB:::Anova.glmmTMB(soy.mod2)
 # Soil and Herbicide fixed effects significant.Site_crop_yr:Soil interaction was also significant
 
-emmip(soy.mod2, Site_crop_yr ~ Soil)
+emmip(soy.mod2, Site_crop_yr)
 
 soycanopy1= emmeans(soy.mod2 ,~ Soil|Site_crop_yr, contr="pairwise", adjust="none", type="response")
 soycanopy1CLD<- CLD(soycanopy1, alpha=0.05, Letters=letters, adjust="none", sort=TRUE, reverse=TRUE)
