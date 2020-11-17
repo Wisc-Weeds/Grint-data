@@ -1,0 +1,56 @@
+---
+title: "Max Help Me Plz"
+author: "Kolby Grint"
+date: "11/16/2020"
+output: html_document
+---
+
+```{r, include= FALSE}
+library(car)
+library(ggplot2)
+library(emmeans)
+library(lme4)
+library(lmerTest)
+library(patchwork)
+library(glmmTMB)
+library(dplyr)
+```
+
+
+```{r}
+getwd()
+
+#Corn1= read.csv(file="Corn_MasterData.csv")
+Soybean1= read.csv(file="Soybean_MasterData.csv")
+
+str(Soybean1)
+```
+
+```{r}
+Soybean1 <- Soybean1 %>%
+  mutate(SBcanopy = 
+         case_when(
+         CC.Canopy == 0     ~  0.001,
+         CC.Canopy == 1     ~  0.999,
+         TRUE               ~  SBcanopy
+         ) 
+           )
+```
+
+
+```{r}
+
+soy.mod2= glmmTMB(SBcanopy~ Site_crop_yr*Soil*Herb + (1|Site_crop_yr:Rep), data=Soybean1)
+
+Anova(soy.mod2)
+# Soil and Herbicide fixed effects significant.Site_crop_yr:Soil interaction was also significant
+
+emmip(soy.mod2, Site_crop_yr ~ Soil)
+
+soycanopy1= emmeans(soy.mod2 ,~ Soil|Site_crop_yr, contr="pairwise", adjust="none", type="response")
+soycanopy1CLD<- CLD(soycanopy1, alpha=0.05, Letters=letters, adjust="none", sort=TRUE, reverse=TRUE)
+
+soycanopy1CLD
+#issue with Arlington 2019
+summary(soycanopy1)
+```
