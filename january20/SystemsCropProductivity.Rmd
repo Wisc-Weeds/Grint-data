@@ -10,7 +10,6 @@ output:
 
 ```{r, include= FALSE}
 library(car)
-library(ggplot2)
 library(emmeans)
 library(lme4)
 library(lmerTest)
@@ -38,6 +37,17 @@ soybean= filter(data, crop == "Soybean")
 
 
 # Corn Yield
+
+```{r}
+corn %>% 
+  ggplot(aes(x = yield)) +
+  geom_density() # it looks normal
+
+shapiro.test(corn$yield) # Shapiro-Wilk shows your data is normal but near to 0.5. Go ahead!
+
+bartlett.test(yield ~ soil, data = corn) # homogeneity of variances OK also
+```
+
 
 ### Model and ANOVA
 
@@ -67,55 +77,74 @@ emmip(cn.mod, ~ soil | site_crop_yr)
 
 
 ```{r, echo= FALSE}
-cn_means = lsmeans(cn.mod, ~ soil | site_crop_yr , contr = "pairwise", adjust = "none")
+cn_means = emmeans(cn.mod, ~ soil | site_crop_yr , contr = "pairwise", adjust = "none")
+
+cn_means$emmeans
 ```
 
 
-```{r, echo= FALSE}
-cn_meansCLD <- CLD(cn_means, alpha=0.05, Letters=letters, adjust="none", sort=FALSE, reverse=FALSE)
+```{r }
+if(requireNamespace("multcomp")) {
+  cn_meansCLD <- multcomp::cld(cn_means$emmeans, alpha=0.05, Letters=letters, adjust="none", sort=TRUE, reverse=TRUE)
+}
+
 cn_meansCLD
 ```
 
-### Corn Yield Figure
-```{r, echo= FALSE}
-CN_meansCLD$Soil= factor(CN_meansCLD$Soil, levels=c("CT", "NT", "CCET", "CCPT","CCFH","CCLT"))
-ylab.text1= expression("Yield kg ha"^"-1")
 
-CNYield_SoilbySiteYR= 
-  ggplot(CN_meansCLD, aes(x= Soil, y= lsmean, label= .group, fill= Site_crop_yr))+
-         geom_point(aes(),stat= "identity")+
-        facet_grid(~Site_crop_yr)+
-         theme_bw()+
-         geom_text(nudge_y= 1400, size = 4)+
-         theme(panel.grid.major=element_blank(), panel.grid.minor= element_blank(),
+### Corn Yield Figure
+
+```{r, echo= FALSE}
+cn_meansCLD <- as_tibble(cn_meansCLD) %>% 
+  mutate(
+    site_crop_yr = fct_recode(site_crop_yr, # do the same for soil management
+      "Arlington 2019" = "ARL_CN_19",
+      "Arlington 2020" = "ARL_CN_20",
+      "Lancaster 2019" = "LAN_CN_19",
+      "Lancaster 2020" = "LAN_CN_20" # recoding with full names are better than abbreviations
+    )
+  )
+  
+
+ggplot(cn_meansCLD, aes(x= fct_reorder(soil, emmean), y= emmean, 
+                        label= .group)) +
+  geom_point() +
+  geom_errorbar(aes(ymin= lower.CL, ymax= upper.CL), width= .2) +
+  facet_grid(~ fct_reorder(factor(site_crop_yr), emmean, .fun = length)) +
+  geom_text(nudge_y= 2500, size = 4) +
+  theme_bw() +
+  theme(panel.grid.major=element_blank(), panel.grid.minor= element_blank(),
         plot.title= element_text(size=16),
         axis.title.x=element_text(size= 15),
         axis.title.y= element_text(size= 15),
-        axis.text= element_text(size= 11))+
-         ylim(0,19000)+
-    geom_errorbar(aes(ymin= lower.CL, ymax= upper.CL), width= .3)+
-    labs(title= "Corn Yield", x= "Soil Management Practice", y= ylab.text1)+
+        axis.text= element_text(size= 11)) +
+  ylim(0, 19000) +
+  coord_flip() +
+  labs(title= "Corn Yield", x= "Soil Management practice", y= expression(paste("Yield (kg ha "^"-1",")"))) +
   ggsave("CNYield_SoilbySiteYR.jpeg", height= 6, width= 10, dpi=600)
-
-CNYield_SoilbySiteYR
 ```
 
 ```{r, include= FALSE}
-CN.mod1= lmer(Yield~ Year*Location*Soil*PRE + (1|Site_crop_yr:Rep), data=Corn)
+cn.mod1 = lmer(yield ~ year * location * soil * pre + (1 | site_crop_yr:rep), data = corn)
 
-qqnorm(resid(CN.mod1))
+qqnorm(resid(cn.mod1))
 
-plot(CN.mod1)
+plot(cn.mod1)
 
-anova(CN.mod1)
+anova(cn.mod1)
 
 #Composite
-CN_means= lsmeans(CN.mod1 ,~ Soil*Year|Location, contr="pairwise", adjust="none", type="response")
-CN_meansCLD<- CLD(CN_means, alpha=0.05, Letters=letters, adjust="none", sort=FALSE, reverse=FALSE)
-CN_meansCLD
+cn_means1 = emmeans(cn.mod1 ,~ soil * year | location, contr = "pairwise", adjust="none", type="response")
+
+
+if(requireNamespace("multcomp")) {
+  cn_meansCLD1 <- multcomp::cld(cn_means$emmeans, alpha=0.05, Letters=letters, adjust="none", sort=TRUE, reverse=TRUE)
+}
+cn_meansCLD1
+
 
 #Arlington alone
-ARLCN.mod1= lmer(Yield~ Year*Location*Soil*PRE + (1|Site_crop_yr:Rep), data=Corn)
+#ARLCN.mod1= lmer(yield ~ year * location * soil * pre + (1 | site_crop_yr:rep), data = corn)
 
 ```
 
@@ -124,56 +153,68 @@ ARLCN.mod1= lmer(Yield~ Year*Location*Soil*PRE + (1|Site_crop_yr:Rep), data=Corn
 lsm1= lsmeans(CN.mod, ~ Soil|Site_crop_yr, contr="pairwise", adjust="none", type= "response")
 Corn_Site_Soil= CLD(lsm1, alpha=0.05, Letters=letters, adjust="none", sort=FALSE, reversed=FALSE)
 Corn_Site_Soil
-
-
 ```
 
 
 
 # Soybean Yield
 
+
+```{r}
+soybean %>% 
+  ggplot(aes(x = yield)) +
+  geom_density() # it looks normal except to this weird drop in the center
+```
+
+
+
 ### Model and ANOVA
 ```{r}
-SB.mod= lmer(Yield~ Site_crop_yr*Soil*PRE + (1|Site_crop_yr), data=Soybean)
-
+sb.mod = lmer(yield ~ site_crop_yr * soil * pre + (1 | site_crop_yr), data = soybean)
 ```
 
 ```{r, echo= FALSE}
-qqnorm(resid(SB.mod))
+qqnorm(resid(sb.mod))
 
-plot(SB.mod)
+plot(sb.mod)
 #Assumption appear to be met visually, There is some "trailing off" occurring at the bottom of the QQ Plot. 
 
 #square root transform for kicks
 
-SB.mod1= lmer(sqrt(Yield)~ Site_crop_yr*Soil*PRE + (1|Site_crop_yr), data=Soybean)
+sb.mod1 = lmer(sqrt(yield) ~ site_crop_yr * soil * pre + (1 | site_crop_yr), data = soybean)
 
-qqnorm(resid(SB.mod1))
+qqnorm(resid(sb.mod1))
 
-plot(SB.mod1)
+plot(sb.mod1)
 #Didn't improve
 ```
 Assumptions for normality and equal variance of residuals appear to be visually met, proceed with ANOVA.
 
 ```{r}
-anova(SB.mod)
+anova(sb.mod)
 #Nothing was significant at alpha= 0.05 but 3-way interaction almost significant. Maybe Clean the data?
 ```
 Nothing was significant at alpha=0.05. The 3-way interaction is dangerously close which makes me uncomfortable.
 
+
 ```{r}
-SB.mod1= lmer(Yield~ Year*Location*Soil*PRE + (1|Site_crop_yr:Rep), data=Soybean)
+sb.mod1 = lmer(yield ~ year * location * soil * pre + (1 | site_crop_yr:rep), 
+               data = soybean)
 
-qqnorm(resid(SB.mod1))
+qqnorm(resid(sb.mod1))
 
-plot(SB.mod1)
+plot(sb.mod1)
 
-anova(SB.mod1)
+anova(sb.mod1)
 
-SB_means= lsmeans(SB.mod1 ,~ Soil*Year|Location, contr="pairwise", adjust="none", type="response")
-SB_meansCLD<- CLD(SB_means, alpha=0.05, Letters=letters, adjust="none", sort=FALSE, reverse=FALSE)
-SB_meansCLD
+sb_means1 = emmeans(sb.mod1, ~ soil * pre | location, contr = "pairwise", adjust="none", type="response")
 
+
+if(requireNamespace("multcomp")) {
+  sb_meansCLD1 <- multcomp::cld(sb_means1$emmeans, alpha=0.05, Letters=letters, adjust="none", sort=TRUE, reverse=TRUE)
+}
+
+sb_meansCLD1
 ```
 
 What do I do about that P-value?!?!?!?!
