@@ -205,7 +205,7 @@ qqnorm(resid(sb.mod1))
 
 plot(sb.mod1)
 
-anova(sb.mod1)
+anova(sb.mod1) # I would look at location:soil:pre 
 
 sb_means1 = emmeans(sb.mod1, ~ soil * pre | location, contr = "pairwise", adjust="none", type="response")
 
