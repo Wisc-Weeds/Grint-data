@@ -1,0 +1,179 @@
+---
+title: "Systems Project Crop Productivity"
+author: "Kolby Grint"
+date: "11/10/2020"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+```{r, include= FALSE}
+library(car)
+library(ggplot2)
+library(emmeans)
+library(lme4)
+library(lmerTest)
+library(patchwork)
+library(glmmTMB)
+library(tidyverse)
+```
+
+
+```{r}
+data = read_csv("SystemsProjectMasterDataforR.csv") %>% 
+  mutate_if(is.character, as.factor) %>% 
+  janitor::clean_names() %>% 
+  mutate(
+    year = as_factor(year),
+    rep = as_factor(rep)
+  )
+data
+```
+
+```{r}
+corn = filter(data, crop == "Corn")
+soybean= filter(data, crop == "Soybean")
+```
+
+
+# Corn Yield
+
+### Model and ANOVA
+
+```{r}
+cn.mod = lmer(yield ~ site_crop_yr * soil * pre + (1 | site_crop_yr : rep), data = corn)
+```
+
+
+```{r, echo= FALSE}
+qqnorm(resid(cn.mod))
+
+plot(cn.mod)
+```
+I think assumptions for normality and equal variance are met.
+
+
+```{r}
+anova(cn.mod)
+#Soil and site-crop-year fixed effects and Site-year:Soil was significant
+```
+
+Site-crop-year:soil management interaction, soil management fixed effect, and site-crop-year fixed effect are all significant. Proceeded to separate means by looking at soil management practices within each site-crop-year. Results displayed in the figure below.
+
+```{r}
+emmip(cn.mod, ~ soil | site_crop_yr)
+```
+
+
+```{r, echo= FALSE}
+cn_means = lsmeans(cn.mod, ~ soil | site_crop_yr , contr = "pairwise", adjust = "none")
+```
+
+
+```{r, echo= FALSE}
+cn_meansCLD <- CLD(cn_means, alpha=0.05, Letters=letters, adjust="none", sort=FALSE, reverse=FALSE)
+cn_meansCLD
+```
+
+### Corn Yield Figure
+```{r, echo= FALSE}
+CN_meansCLD$Soil= factor(CN_meansCLD$Soil, levels=c("CT", "NT", "CCET", "CCPT","CCFH","CCLT"))
+ylab.text1= expression("Yield kg ha"^"-1")
+
+CNYield_SoilbySiteYR= 
+  ggplot(CN_meansCLD, aes(x= Soil, y= lsmean, label= .group, fill= Site_crop_yr))+
+         geom_point(aes(),stat= "identity")+
+        facet_grid(~Site_crop_yr)+
+         theme_bw()+
+         geom_text(nudge_y= 1400, size = 4)+
+         theme(panel.grid.major=element_blank(), panel.grid.minor= element_blank(),
+        plot.title= element_text(size=16),
+        axis.title.x=element_text(size= 15),
+        axis.title.y= element_text(size= 15),
+        axis.text= element_text(size= 11))+
+         ylim(0,19000)+
+    geom_errorbar(aes(ymin= lower.CL, ymax= upper.CL), width= .3)+
+    labs(title= "Corn Yield", x= "Soil Management Practice", y= ylab.text1)+
+  ggsave("CNYield_SoilbySiteYR.jpeg", height= 6, width= 10, dpi=600)
+
+CNYield_SoilbySiteYR
+```
+
+```{r, include= FALSE}
+CN.mod1= lmer(Yield~ Year*Location*Soil*PRE + (1|Site_crop_yr:Rep), data=Corn)
+
+qqnorm(resid(CN.mod1))
+
+plot(CN.mod1)
+
+anova(CN.mod1)
+
+#Composite
+CN_means= lsmeans(CN.mod1 ,~ Soil*Year|Location, contr="pairwise", adjust="none", type="response")
+CN_meansCLD<- CLD(CN_means, alpha=0.05, Letters=letters, adjust="none", sort=FALSE, reverse=FALSE)
+CN_meansCLD
+
+#Arlington alone
+ARLCN.mod1= lmer(Yield~ Year*Location*Soil*PRE + (1|Site_crop_yr:Rep), data=Corn)
+
+```
+
+
+```{r, include= FALSE}
+lsm1= lsmeans(CN.mod, ~ Soil|Site_crop_yr, contr="pairwise", adjust="none", type= "response")
+Corn_Site_Soil= CLD(lsm1, alpha=0.05, Letters=letters, adjust="none", sort=FALSE, reversed=FALSE)
+Corn_Site_Soil
+
+
+```
+
+
+
+# Soybean Yield
+
+### Model and ANOVA
+```{r}
+SB.mod= lmer(Yield~ Site_crop_yr*Soil*PRE + (1|Site_crop_yr), data=Soybean)
+
+```
+
+```{r, echo= FALSE}
+qqnorm(resid(SB.mod))
+
+plot(SB.mod)
+#Assumption appear to be met visually, There is some "trailing off" occurring at the bottom of the QQ Plot. 
+
+#square root transform for kicks
+
+SB.mod1= lmer(sqrt(Yield)~ Site_crop_yr*Soil*PRE + (1|Site_crop_yr), data=Soybean)
+
+qqnorm(resid(SB.mod1))
+
+plot(SB.mod1)
+#Didn't improve
+```
+Assumptions for normality and equal variance of residuals appear to be visually met, proceed with ANOVA.
+
+```{r}
+anova(SB.mod)
+#Nothing was significant at alpha= 0.05 but 3-way interaction almost significant. Maybe Clean the data?
+```
+Nothing was significant at alpha=0.05. The 3-way interaction is dangerously close which makes me uncomfortable.
+
+```{r}
+SB.mod1= lmer(Yield~ Year*Location*Soil*PRE + (1|Site_crop_yr:Rep), data=Soybean)
+
+qqnorm(resid(SB.mod1))
+
+plot(SB.mod1)
+
+anova(SB.mod1)
+
+SB_means= lsmeans(SB.mod1 ,~ Soil*Year|Location, contr="pairwise", adjust="none", type="response")
+SB_meansCLD<- CLD(SB_means, alpha=0.05, Letters=letters, adjust="none", sort=FALSE, reverse=FALSE)
+SB_meansCLD
+
+```
+
+What do I do about that P-value?!?!?!?!
